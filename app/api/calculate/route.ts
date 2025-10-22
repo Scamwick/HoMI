@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getServerSupabase } from '@/lib/supabase';
 
 interface CalculateRequest {
   income: number;
@@ -9,6 +10,7 @@ interface CalculateRequest {
   creditScore: number;
   propertyPrice: number;
   stressLevel: number;
+  email?: string;
 }
 
 export async function POST(request: Request) {
@@ -25,6 +27,8 @@ export async function POST(request: Request) {
 
     // Calculate HōMI Score (simplified version for API)
     const score = calculateScore(body);
+    const financialScore = calculateFinancialScore(body);
+    const emotionalScore = calculateEmotionalScore(body);
 
     // Calculate affordability
     const affordability = calculateAffordability(body);
@@ -32,14 +36,68 @@ export async function POST(request: Request) {
     // Generate recommendations
     const recommendations = generateRecommendations(body, score);
 
+    // Determine decision
+    const decision = score >= 80 ? 'YES' : score >= 60 ? 'NOT YET' : 'NO';
+
+    // Save assessment to Supabase
+    try {
+      const supabase = getServerSupabase();
+
+      const creditScoreRange =
+        body.creditScore >= 740 ? '740+' :
+        body.creditScore >= 700 ? '700-739' :
+        body.creditScore >= 660 ? '660-699' :
+        body.creditScore >= 620 ? '620-659' : '<620';
+
+      const { data, error } = await supabase
+        .from('assessments')
+        .insert({
+          income: body.income,
+          savings: body.downPayment,
+          monthly_debt: body.expenses,
+          credit_score_range: creditScoreRange,
+          target_price: body.propertyPrice,
+          confidence: body.stressLevel,
+          total_score: score,
+          financial_score: financialScore,
+          emotional_score: emotionalScore,
+          decision: decision,
+          recommendations: recommendations,
+          message: recommendations[0],
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Supabase insert error:', error);
+      } else {
+        console.log('Assessment saved:', data?.id);
+      }
+
+      // Log event
+      await supabase.from('events').insert({
+        event_type: 'assessment_completed',
+        properties: {
+          score,
+          decision,
+          income: body.income,
+          target_price: body.propertyPrice,
+        },
+      });
+    } catch (dbError) {
+      console.error('Database error:', dbError);
+      // Don't fail the request if database save fails
+    }
+
     return NextResponse.json({
       score,
       affordability,
       recommendations,
       breakdown: {
-        financial: calculateFinancialScore(body),
-        emotional: calculateEmotionalScore(body),
+        financial: financialScore,
+        emotional: emotionalScore,
       },
+      decision,
     });
   } catch (error) {
     console.error('Calculation error:', error);
