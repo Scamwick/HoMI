@@ -1,103 +1,86 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import React, { useState } from 'react';
+import {
+  Home,
+  ArrowRight,
+  ArrowLeft,
+  Target,
+  TrendingUp,
+  Heart,
+  Clock,
+  Mail,
+  Check,
+  BarChart3,
+} from 'lucide-react';
+
+export default function HomePage() {
+  const [step, setStep] = useState(0);
+
+  const steps = [
+    {
+      title: 'Welcome to HōMI',
+      description:
+        'Your personalized homebuying and financial wellness companion.',
+      icon: <Home className="w-8 h-8 text-indigo-500" />,
+    },
+    {
+      title: 'Track Your Financial Journey',
+      description:
+        'Get insights, budgets, and simulations to plan your home purchase.',
+      icon: <BarChart3 className="w-8 h-8 text-indigo-500" />,
+    },
+    {
+      title: 'Visualize Your Path',
+      description:
+        'We’ll guide you through affordability, readiness, and next steps.',
+      icon: <Target className="w-8 h-8 text-indigo-500" />,
+    },
+  ];
+
+  const nextStep = () => setStep((prev) => (prev + 1) % steps.length);
+  const prevStep = () => setStep((prev) => (prev - 1 + steps.length) % steps.length);
+
+  const { title, description, icon } = steps[step];
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <main className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6 text-center">
+      <div className="max-w-xl bg-white shadow-lg rounded-2xl p-8 border border-gray-100">
+        <div className="flex justify-center mb-4">{icon}</div>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">{title}</h1>
+        <p className="text-gray-600 mb-6">{description}</p>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+        <div className="flex items-center justify-center space-x-4">
+          <button
+            onClick={prevStep}
+            className="flex items-center text-sm px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <ArrowLeft className="w-4 h-4 mr-1" /> Back
+          </button>
+
+          <button
+            onClick={nextStep}
+            className="flex items-center text-sm px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg transition"
           >
-            Read our docs
-          </a>
+            Next <ArrowRight className="w-4 h-4 ml-1" />
+          </button>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+
+        <div className="mt-6 flex justify-center space-x-2">
+          {steps.map((_, i) => (
+            <span
+              key={i}
+              className={`h-2 w-2 rounded-full ${
+                i === step ? 'bg-indigo-600' : 'bg-gray-300'
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+
+      <footer className="mt-10 text-gray-500 text-sm">
+        Built with ❤️ by <span className="font-medium text-indigo-500">HōMI</span>
       </footer>
-    </div>
+    </main>
   );
 }
