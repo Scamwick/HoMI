@@ -6,11 +6,6 @@ import {
   ArrowRight,
   ArrowLeft,
   Target,
-  TrendingUp,
-  Heart,
-  Clock,
-  Mail,
-  Check,
   BarChart3,
 } from 'lucide-react';
 
